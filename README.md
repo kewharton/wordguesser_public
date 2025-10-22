@@ -147,7 +147,7 @@ Submit the following evidence to your instructor:
 
 ## 🔜 Next Steps (Preview)
 
-In **Part 2**, you will:
+In **[Part 2](part2.md)**, you will:
 
 - Containerize this Ruby app using **Docker**
 - Write a **GitHub Actions** workflow to build and test the app automatically
