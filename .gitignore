@@ -2,3 +2,6 @@ coverage
 .bundle/
 TAGS
 *.swp
+.vendor
+vendor/
+venv
