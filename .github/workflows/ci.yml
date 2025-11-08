@@ -79,3 +79,45 @@ jobs:
             -v ${{ github.workspace }}:/app \
             wordguesser-ci:latest \
             bash -lc "bundle exec cucumber"
+  lint:
+    name: RuboCop Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Run RuboCop on lib/wordguesser_game.rb
+        run: |
+          bundle exec rubocop lib/wordguesser_game.rb --require rubocop-rspec -f json | tee rubocop.json
+
+      - name: Install jq
+        run: sudo apt-get update -y && sudo apt-get install -y jq
+
+      - name: Check offense threshold
+        env:
+          OFFENSE_THRESHOLD: "25"
+        run: |
+          COUNT=$(jq '.summary.offense_count' rubocop.json)
+          echo "Found $COUNT offenses. Threshold: $OFFENSE_THRESHOLD"
+          if [ "$COUNT" -gt "$OFFENSE_THRESHOLD" ]; then
+            echo "::error::RuboCop offenses ($COUNT) exceed threshold ($OFFENSE_THRESHOLD)."
+            exit 1
+          fi
+  deploy:
+    name: Deploy to Render
+    needs: [rspec, cucumber, lint]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Trigger Render Deploy Hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::RENDER_DEPLOY_HOOK_URL secret is not set."
+            exit 1
+          fi
+          curl -fsS -X POST "$DEPLOY_HOOK"
