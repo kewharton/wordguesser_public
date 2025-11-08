@@ -158,3 +158,4 @@ In **[Part 2](part2.md)**, you will:
 Before moving on, make sure all tests pass and the app runs cleanly on your local system.
 
 (11/7) small commit
+Another small change for the pull request 
