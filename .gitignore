@@ -5,3 +5,4 @@ TAGS
 .vendor
 vendor/
 venv
+SECRET_ENV.TXT
