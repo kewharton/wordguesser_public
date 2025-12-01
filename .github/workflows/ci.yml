@@ -3,6 +3,9 @@ name: CI / CD
 on:
   push:
     branches: [ "main" ]
+  pull_request: 
+    branches: [ "main" ]
+
 
 jobs:
   build:
@@ -106,6 +109,24 @@ jobs:
             echo "::error::RuboCop offenses ($COUNT) exceed threshold ($OFFENSE_THRESHOLD)."
             exit 1
           fi
+  
+  # 1. Dependency Vulnerability Scanning (SCA)
+
+
+  # 5. Secret Scanning using Gitleaks: https://github.com/marketplace/actions/gitleaks
+  secret-scanning:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+
+  # 8. Dependency Review Gate on Pull Requests
+          
   deploy:
     name: Deploy to Render
     needs: [rspec, cucumber, lint]
