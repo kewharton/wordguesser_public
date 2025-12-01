@@ -125,7 +125,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
 
-  # 8. Dependency Review Gate on Pull Requests
+  # 8. Dependency Review Gate on Pull Requests: https://github.com/marketplace/actions/dependency-review          
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
